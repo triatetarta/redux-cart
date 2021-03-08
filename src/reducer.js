@@ -1,4 +1,11 @@
-import { DECREASE, INCREASE, CLEAR_CART, REMOVE, GET_TOTALS } from './actions';
+import {
+  DECREASE,
+  INCREASE,
+  CLEAR_CART,
+  REMOVE,
+  GET_TOTALS,
+  TOGGLE_AMOUNT,
+} from './actions';
 
 function reducer(state, action) {
   switch (action.type) {
@@ -8,17 +15,13 @@ function reducer(state, action) {
         cart: [],
       };
     case DECREASE: {
-      let tempCart = [];
-      if (action.payload.amount === 1) {
-        tempCart = state.cart.filter((item) => item.id !== action.payload.id);
-      } else {
-        tempCart = state.cart.map((item) => {
-          if (item.id === action.payload.id) {
-            item = { ...item, amount: item.amount - 1 };
-          }
-          return item;
-        });
-      }
+      let tempCart = state.cart.map((item) => {
+        if (item.id === action.payload.id) {
+          item = { ...item, amount: item.amount - 1 };
+        }
+        return item;
+      });
+
       return {
         ...state,
         cart: tempCart,
@@ -65,6 +68,24 @@ function reducer(state, action) {
         amount,
       };
     }
+
+    case TOGGLE_AMOUNT:
+      return {
+        ...state,
+        cart: state.cart.map((item) => {
+          if (item.id === action.payload.id) {
+            if (action.payload.toggle === 'inc') {
+              return (item = { ...item, amount: item.amount + 1 });
+            }
+            if (action.payload.toggle === 'dec') {
+              return (item = { ...item, amount: item.amount - 1 });
+            }
+          }
+
+          return item;
+        }),
+      };
+
     default:
       return state;
   }
